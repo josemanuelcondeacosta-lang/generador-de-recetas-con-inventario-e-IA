@@ -57,7 +57,9 @@ Los secretos se configuran en `.env` en cada entorno. El repositorio incluye ún
 
 ## Publicación alternativa en Vercel con Supabase
 
-Esta opción usa PostgreSQL administrado y HTTPS de Vercel. El enunciado pide un VPS con Docker Compose para el criterio de despliegue. Confirma con el profesor si admite esta alternativa.
+La versión publicada en <https://generadorderecetas.vercel.app> usa esta opción: FastAPI en Vercel con HTTPS y PostgreSQL administrado en Supabase, donde se crearon las tablas `usuarios`, `ingredientes`, `recetas` y `calificaciones`. La generación usa `openai/gpt-4.1-mini` a través de OpenRouter. El enunciado pide un VPS con Docker Compose para el criterio de despliegue; la configuración para VPS de la sección anterior está lista para usarse.
+
+Antes de entregar la URL, ábrela en una ventana de incógnito: las URL de vista previa de Vercel (`*-git-main-*.vercel.app`) exigen iniciar sesión en Vercel. Entrega la URL de producción.
 
 1. Crea un proyecto de Supabase dedicado a Alacena. Desactiva **Data API** en los ajustes de Supabase, ya que todas las consultas pasan por FastAPI y su JWT.
 2. En **Connect → Transaction pooler**, copia la URI de PostgreSQL y sustituye la contraseña. Si contiene caracteres reservados de URL, codifícalos. Conserva el puerto `6543`. [Conexión PostgreSQL en Supabase](https://supabase.com/docs/guides/database/connecting-to-postgres)
