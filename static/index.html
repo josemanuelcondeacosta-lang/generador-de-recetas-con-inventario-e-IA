@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alacena · Generador de recetas</title>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header><a href="/" class="brand">Alacena<span>.</span></a><button id="logout" class="secondary" hidden>Cerrar sesión</button></header>
+  <main>
+    <section id="access" class="access">
+      <div><h1>Cocina con lo que tienes.</h1><p>Guarda los ingredientes de tu alacena y genera recetas con tu inventario.</p></div>
+      <form id="auth" class="card">
+        <h2>Accede a tu alacena</h2>
+        <label>Correo electrónico<input name="email" type="email" autocomplete="email" required></label>
+        <label>Contraseña<input name="password" type="password" autocomplete="current-password" minlength="8" maxlength="128" required></label>
+        <button name="mode" value="login">Iniciar sesión</button>
+        <button name="mode" value="register" class="secondary">Crear cuenta</button>
+      </form>
+    </section>
+    <p id="message" role="status" aria-live="polite" hidden></p>
+    <div id="workspace" hidden>
+      <h1>Mi alacena</h1>
+      <div class="columns">
+        <section class="card">
+          <h2>Inventario</h2>
+          <form id="ingredient">
+            <label>Ingrediente<input name="name" maxlength="80" placeholder="Arroz" required></label>
+            <div class="fields">
+              <label>Cantidad<input name="quantity" type="number" min="0.001" max="1000000" step="any" placeholder="250" required></label>
+              <label>Unidad<input name="unit" maxlength="30" placeholder="g" required></label>
+            </div>
+            <div class="actions"><button id="save-ingredient">Agregar ingrediente</button><button id="cancel" type="button" class="secondary" hidden>Cancelar</button></div>
+          </form>
+          <ul id="ingredients"></ul>
+        </section>
+        <section class="card">
+          <div class="section-heading"><h2>Historial de recetas</h2><button id="generate">Generar receta</button></div>
+          <div id="recipes"></div>
+        </section>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
