@@ -7,3 +7,6 @@ __pycache__/
 .pytest_cache/
 *.py[cod]
 *.sqlite3
+
+# Originales sin optimizar (las versiones web están en static/img)
+static/Imagenes/
