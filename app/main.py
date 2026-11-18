@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text
 
 from app.database import make_engine
 from app.models import Base
@@ -20,9 +21,16 @@ static = Path(__file__).resolve().parents[1] / "static"
 async def lifespan(app: FastAPI):
     if len(os.environ.get("JWT_SECRET", "")) < 32:
         raise RuntimeError("JWT_SECRET debe tener al menos 32 caracteres")
-    Base.metadata.create_all(engine)
-    yield
-    engine.dispose()
+    with engine.begin() as connection:
+        if connection.dialect.name == "postgresql":
+            # Serialize schema creation across simultaneous cold starts.
+            connection.execute(text("SELECT pg_advisory_xact_lock(817432610)"))
+        Base.metadata.create_all(connection)
+    app.state.engine = engine
+    try:
+        yield
+    finally:
+        engine.dispose()
 
 
 app = FastAPI(title="Generador de recetas", lifespan=lifespan)

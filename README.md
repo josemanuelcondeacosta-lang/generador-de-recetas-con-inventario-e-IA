@@ -52,3 +52,13 @@ La suite usa una base SQLite temporal por prueba de API y simula OpenRouter en e
 5. Comprueba `curl --fail --show-error https://TU_DOMINIO/openapi.json` y prueba en el navegador el flujo de registro, inventario, generación, calificación y eliminación.
 
 Los secretos se configuran en `.env` en cada entorno. El repositorio incluye únicamente `.env.example`.
+
+## Publicación alternativa en Vercel con Supabase
+
+Esta opción usa PostgreSQL administrado y HTTPS de Vercel. El enunciado pide un VPS con Docker Compose para el criterio de despliegue. Confirma con el profesor si admite esta alternativa.
+
+1. Crea un proyecto de Supabase dedicado a Alacena. Desactiva **Data API** en los ajustes de Supabase, ya que todas las consultas pasan por FastAPI y su JWT.
+2. En **Connect → Transaction pooler**, copia la URI de PostgreSQL y sustituye la contraseña. Si contiene caracteres reservados de URL, codifícalos. Conserva el puerto `6543`. [Conexión PostgreSQL en Supabase](https://supabase.com/docs/guides/database/connecting-to-postgres)
+3. Importa el repositorio público en Vercel. Selecciona **FastAPI** y la raíz del repositorio. Vercel detecta `app/main.py`. [FastAPI en Vercel](https://vercel.com/docs/frameworks/backend/fastapi)
+4. En las variables de entorno de producción, configura `DATABASE_URL` con la URI de Supabase, `DATABASE_TRANSACTION_POOLER=1`, `JWT_SECRET` con un valor aleatorio de 32 caracteres o más, `OPENROUTER_API_KEY` y `OPENROUTER_MODEL`. El modo pooler exige SSL y desactiva la preparación automática de sentencias.
+5. Despliega, abre la URL HTTPS y verifica que `/`, `/docs` y `/favicon.ico` cargan. Prueba registro, inventario, generación, calificación y eliminación con una cuenta de prueba.
