@@ -4,90 +4,103 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Registra los ingredientes de tu alacena y genera recetas con inteligencia artificial.">
-  <meta name="theme-color" content="#24543a">
+  <meta name="theme-color" content="#1f7a4d">
   <title>Alacena · Generador de recetas</title>
   <link rel="icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="/static/style.css">
   <script src="/static/app.js" defer></script>
 </head>
 <body>
   <header class="topbar">
     <a href="/" class="brand" aria-label="Alacena, inicio">
-      <span class="brand-mark" aria-hidden="true">🥘</span>Alacena<span class="dot">.</span>
+      <span class="logo" aria-hidden="true"></span>Alacena
     </a>
     <nav class="topbar-actions">
-      <a href="/docs" class="link" target="_blank" rel="noopener">API</a>
-      <button id="logout" class="ghost" hidden>Cerrar sesión</button>
+      <a href="/docs" class="btn btn-tertiary" target="_blank" rel="noopener">Documentación API</a>
+      <button id="logout" class="btn btn-secondary" hidden>Cerrar sesión</button>
     </nav>
   </header>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
   <main>
+    <!-- Acceso -->
     <section id="access" class="access">
       <div class="hero">
-        <span class="eyebrow">Recetas con IA · a partir de tu inventario</span>
-        <h1>Cocina con lo que <em>ya tienes</em>.</h1>
-        <p class="lead">Registra los ingredientes de tu alacena y obtén recetas paso a paso, con cantidades, tiempo y dificultad. Guarda, califica y organiza tu historial.</p>
-        <ul class="features">
-          <li><span aria-hidden="true">🧺</span><div><strong>Inventario personal</strong>Agrega, edita y elimina ingredientes.</div></li>
-          <li><span aria-hidden="true">✨</span><div><strong>Generación inteligente</strong>Un modelo de lenguaje propone la receta.</div></li>
-          <li><span aria-hidden="true">⭐</span><div><strong>Historial y calificación</strong>Puntúa tus recetas de 1 a 5 estrellas.</div></li>
-        </ul>
+        <span class="overline">Recetas con IA a partir de tu inventario</span>
+        <h1>Cocina con lo que ya tienes en casa.</h1>
+        <p class="lead">Registra los ingredientes de tu alacena y obtén recetas paso a paso con cantidades, tiempo estimado y nivel de dificultad.</p>
+        <ol class="features">
+          <li><span class="step">01</span><div><strong>Inventario personal</strong><p>Agrega, edita y elimina ingredientes.</p></div></li>
+          <li><span class="step">02</span><div><strong>Generación con IA</strong><p>Un modelo de lenguaje propone la receta.</p></div></li>
+          <li><span class="step">03</span><div><strong>Historial y calificación</strong><p>Puntúa tus recetas de 1 a 5 estrellas.</p></div></li>
+        </ol>
       </div>
 
-      <form id="auth" class="card auth-card" novalidate>
-        <div class="tabs" role="tablist">
-          <button type="button" role="tab" class="tab active" data-mode="login" aria-selected="true">Iniciar sesión</button>
-          <button type="button" role="tab" class="tab" data-mode="register" aria-selected="false">Crear cuenta</button>
-        </div>
-        <h2 id="auth-title">Bienvenido de nuevo</h2>
-        <p id="auth-hint" class="muted">Ingresa a tu alacena para continuar.</p>
-        <label>Correo electrónico<input name="email" type="email" autocomplete="email" placeholder="tu@correo.com" required></label>
-        <label>Contraseña<input name="password" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="Mínimo 8 caracteres" required></label>
-        <button id="auth-submit" class="primary block">Iniciar sesión</button>
-      </form>
+      <div class="auth-wrap">
+        <div class="hero-image" role="img" aria-label="Ingredientes frescos sobre una mesa de cocina"></div>
+        <form id="auth" class="panel auth-card" novalidate>
+          <div class="segmented" role="tablist">
+            <button type="button" role="tab" class="segment active" data-mode="login" aria-selected="true">Iniciar sesión</button>
+            <button type="button" role="tab" class="segment" data-mode="register" aria-selected="false">Crear cuenta</button>
+          </div>
+          <div>
+            <h2 id="auth-title">Bienvenido de nuevo</h2>
+            <p id="auth-hint" class="text-secondary">Ingresa a tu alacena para continuar.</p>
+          </div>
+          <label class="field">Correo electrónico<input name="email" type="email" autocomplete="email" placeholder="tu@correo.com" required></label>
+          <label class="field">Contraseña<input name="password" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="Mínimo 8 caracteres" required></label>
+          <button id="auth-submit" class="btn btn-primary btn-lg block">Iniciar sesión</button>
+        </form>
+      </div>
     </section>
 
+    <!-- Espacio de trabajo -->
     <div id="workspace" hidden>
-      <div class="workspace-head">
+      <div class="page-head">
         <div>
-          <span class="eyebrow">Tu cocina</span>
+          <span class="overline">Tu cocina</span>
           <h1>Mi alacena</h1>
         </div>
         <dl class="stats">
-          <div><dt>Ingredientes</dt><dd id="stat-ingredients">0</dd></div>
-          <div><dt>Recetas</dt><dd id="stat-recipes">0</dd></div>
-          <div><dt>Promedio</dt><dd id="stat-rating">–</dd></div>
+          <div class="stat"><dt>Ingredientes</dt><dd id="stat-ingredients">0</dd></div>
+          <div class="stat"><dt>Recetas</dt><dd id="stat-recipes">0</dd></div>
+          <div class="stat"><dt>Promedio</dt><dd id="stat-rating">–</dd></div>
         </dl>
       </div>
 
-      <div class="columns">
-        <section class="card inventory" aria-labelledby="inventory-title">
-          <h2 id="inventory-title">Inventario</h2>
-          <p class="muted">Lo que tienes disponible en casa.</p>
+      <div class="layout">
+        <section class="panel inventory" aria-labelledby="inventory-title">
+          <header class="panel-head">
+            <h2 id="inventory-title">Inventario</h2>
+            <p class="text-secondary">Lo que tienes disponible en casa.</p>
+          </header>
           <form id="ingredient">
-            <label>Ingrediente<input name="name" maxlength="80" placeholder="Ej. Arroz" required></label>
-            <div class="fields">
-              <label>Cantidad<input name="quantity" type="number" min="0.001" max="1000000" step="any" placeholder="250" required></label>
-              <label>Unidad<input name="unit" maxlength="30" placeholder="g" list="units" required></label>
+            <label class="field">Ingrediente<input name="name" maxlength="80" placeholder="Ej. Arroz" required></label>
+            <div class="field-row">
+              <label class="field">Cantidad<input name="quantity" type="number" min="0.001" max="1000000" step="any" placeholder="250" required></label>
+              <label class="field">Unidad<input name="unit" maxlength="30" placeholder="g" list="units" required></label>
               <datalist id="units"><option value="g"><option value="kg"><option value="ml"><option value="l"><option value="unidades"><option value="tazas"><option value="cucharadas"></datalist>
             </div>
-            <div class="actions">
-              <button id="save-ingredient" class="primary">Agregar ingrediente</button>
-              <button id="cancel" type="button" class="ghost" hidden>Cancelar</button>
+            <div class="form-actions">
+              <button id="save-ingredient" class="btn btn-primary">Agregar ingrediente</button>
+              <button id="cancel" type="button" class="btn btn-secondary" hidden>Cancelar</button>
             </div>
           </form>
+          <div class="divider"></div>
           <ul id="ingredients" class="ingredient-list"></ul>
         </section>
 
-        <section class="recipes-panel" aria-labelledby="recipes-title">
-          <div class="generate-banner">
-            <div>
+        <section class="recipes" aria-labelledby="recipes-title">
+          <div class="banner">
+            <div class="banner-text">
               <h2 id="recipes-title">Historial de recetas</h2>
               <p>Genera una receta nueva con tu inventario actual.</p>
             </div>
-            <button id="generate" class="accent"><span class="spinner" aria-hidden="true"></span><span class="label">✨ Generar receta</span></button>
+            <button id="generate" class="btn btn-accent btn-lg"><span class="spinner" aria-hidden="true"></span><span class="label">Generar receta</span></button>
           </div>
           <div id="recipes" class="recipe-list"></div>
         </section>
@@ -95,6 +108,6 @@
     </div>
   </main>
 
-  <footer class="footer">Tecnologías Web · Proyecto final · Hecho con FastAPI y PostgreSQL</footer>
+  <footer class="footer">Tecnologías Web · Proyecto final · FastAPI + PostgreSQL + OpenRouter</footer>
 </body>
 </html>
