@@ -72,7 +72,7 @@ function element(tag, text = "", className = "") {
   return node;
 }
 
-function action(label, task, className = "ghost icon", title = "") {
+function action(label, task, className = "btn btn-tertiary btn-sm", title = "") {
   const button = element("button", label, className);
   button.type = "button";
   if (title) { button.title = title; button.setAttribute("aria-label", title); }
@@ -80,17 +80,22 @@ function action(label, task, className = "ghost icon", title = "") {
   return button;
 }
 
-function emptyState(icon, text, tag = "div") {
+function emptyState(image, title, text, tag = "div") {
   const box = element(tag, "", "empty");
-  box.append(element("span", icon), document.createTextNode(text));
+  const art = element("div", "", "illustration");
+  art.style.setProperty("--img", 'url("/static/img/' + image + '")');
+  art.setAttribute("aria-hidden", "true");
+  box.append(art, element("strong", title), element("span", text));
   return box;
 }
+
+const STAR_SVG = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.3 5.9.9-4.25 4.1 1 5.8L10 14.9l-5.25 2.7 1-5.8L1.5 7.7l5.9-.9z"/></svg>';
 
 /* ---------- Autenticación ---------- */
 function setAuthMode(mode) {
   authMode = mode;
   const text = AUTH_TEXT[mode];
-  for (const tab of auth.querySelectorAll(".tab")) {
+  for (const tab of auth.querySelectorAll(".segment")) {
     const active = tab.dataset.mode === mode;
     tab.classList.toggle("active", active);
     tab.setAttribute("aria-selected", String(active));
@@ -101,7 +106,7 @@ function setAuthMode(mode) {
   auth.elements.password.autocomplete = text.autocomplete;
 }
 
-for (const tab of auth.querySelectorAll(".tab")) {
+for (const tab of auth.querySelectorAll(".segment")) {
   tab.addEventListener("click", () => setAuthMode(tab.dataset.mode));
 }
 
@@ -139,14 +144,14 @@ async function loadIngredients() {
   const list = byId("ingredients");
   list.replaceChildren();
   byId("stat-ingredients").textContent = items.length;
-  if (!items.length) list.append(emptyState("🧺", "Tu inventario está vacío. Agrega tu primer ingrediente.", "li"));
+  if (!items.length) list.append(emptyState("empty-pantry.png", "Inventario vacío", "Agrega tu primer ingrediente para empezar.", "li"));
   for (const item of items) {
     const row = element("li");
     if (editing === item.id) row.classList.add("editing");
     row.append(
       element("span", item.name, "name"),
-      element("span", formatQuantity(item.quantity) + " " + item.unit, "qty"),
-      action("✏️", () => {
+      element("span", formatQuantity(item.quantity) + " " + item.unit, "chip qty"),
+      action("Editar", () => {
         resetIngredient();
         editing = item.id;
         row.classList.add("editing");
@@ -154,13 +159,13 @@ async function loadIngredients() {
         byId("save-ingredient").textContent = "Guardar cambios";
         byId("cancel").hidden = false;
         ingredient.elements.name.focus();
-      }, "ghost icon", "Editar " + item.name),
-      action("🗑️", async () => {
+      }, "btn btn-tertiary btn-sm", "Editar " + item.name),
+      action("Eliminar", async () => {
         await api("/ingredients/" + item.id, "DELETE");
         if (editing === item.id) resetIngredient();
         await loadIngredients();
         notify(item.name + " eliminado del inventario.");
-      }, "danger icon", "Eliminar " + item.name),
+      }, "btn btn-danger btn-sm", "Eliminar " + item.name),
     );
     list.append(row);
   }
@@ -185,7 +190,7 @@ function updateRecipeStats(recipes) {
   byId("stat-recipes").textContent = recipes.length;
   const rated = recipes.filter((recipe) => recipe.stars);
   byId("stat-rating").textContent = rated.length
-    ? (rated.reduce((sum, recipe) => sum + recipe.stars, 0) / rated.length).toFixed(1) + " ★"
+    ? (rated.reduce((sum, recipe) => sum + recipe.stars, 0) / rated.length).toFixed(1) + " / 5"
     : "–";
 }
 
@@ -198,7 +203,7 @@ function starRating(recipe, onChange) {
     box.querySelectorAll(".star").forEach((star, index) => star.classList.toggle("on", index < value));
   };
   for (let stars = 1; stars <= 5; stars++) {
-    const star = action("★", async () => {
+    const star = action("", async () => {
       const updated = await api("/recipes/" + recipe.id + "/rating", "PUT", { stars });
       recipe.stars = updated.stars;
       paint(recipe.stars);
@@ -206,6 +211,7 @@ function starRating(recipe, onChange) {
       onChange();
       notify("Calificación guardada: " + stars + (stars === 1 ? " estrella." : " estrellas."));
     }, "star", stars + (stars === 1 ? " estrella" : " estrellas"));
+    star.innerHTML = STAR_SVG;
     box.append(star);
   }
   paint(recipe.stars || 0);
@@ -219,7 +225,7 @@ async function loadRecipes() {
   const list = byId("recipes");
   list.replaceChildren();
   updateRecipeStats(recipes);
-  if (!recipes.length) list.append(emptyState("📖", "Aún no tienes recetas. Agrega ingredientes y pulsa «Generar receta»."));
+  if (!recipes.length) list.append(emptyState("empty-recipes.png", "Aún no tienes recetas", "Agrega ingredientes y pulsa «Generar receta»."));
   for (const recipe of recipes) {
     const card = element("article", "", "recipe");
 
@@ -227,9 +233,9 @@ async function loadRecipes() {
     const meta = element("div", "", "meta");
     const date = new Date(recipe.created_at).toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric" });
     meta.append(
-      element("span", "⏱ " + recipe.tiempo_minutos + " min", "badge"),
-      element("span", "Dificultad " + recipe.dificultad, "badge " + recipe.dificultad),
-      element("span", "📅 " + date, "badge"),
+      element("span", recipe.tiempo_minutos + " min", "chip"),
+      element("span", recipe.dificultad.charAt(0).toUpperCase() + recipe.dificultad.slice(1), "chip " + recipe.dificultad),
+      element("span", date, "chip"),
     );
     head.append(element("h3", recipe.titulo), meta);
 
@@ -247,15 +253,17 @@ async function loadRecipes() {
     const foot = element("div", "", "recipe-foot");
     foot.append(
       starRating(recipe, () => updateRecipeStats(recipes)),
-      action("🗑️ Eliminar", async () => {
+      action("Eliminar receta", async () => {
         if (!window.confirm("¿Eliminar «" + recipe.titulo + "» del historial?")) return;
         await api("/recipes/" + recipe.id, "DELETE");
         await loadRecipes();
         notify("Receta eliminada.");
-      }, "danger", "Eliminar receta"),
+      }, "btn btn-danger btn-sm", "Eliminar receta"),
     );
 
-    card.append(head, body, foot);
+    const cover = element("div", "", "recipe-cover");
+    cover.setAttribute("aria-hidden", "true");
+    card.append(cover, head, body, foot);
     list.append(card);
   }
 }
@@ -272,7 +280,7 @@ generate.addEventListener("click", () => run(generate, async () => {
     notify("Receta generada y guardada en tu historial.");
   } finally {
     generate.classList.remove("loading");
-    label.textContent = "✨ Generar receta";
+    label.textContent = "Generar receta";
   }
 }));
 
