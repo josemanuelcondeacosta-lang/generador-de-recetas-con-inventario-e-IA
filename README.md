@@ -2,6 +2,8 @@
 
 Aplicación del proyecto final de Tecnologías Web (5916). Cada usuario administra su inventario y puede generar, consultar, calificar de 1 a 5 estrellas y eliminar sus recetas.
 
+**Aplicación desplegada:** <https://generadorderecetas.vercel.app> · **Documentación de la API:** <https://generadorderecetas.vercel.app/docs>
+
 ## Arquitectura
 
 FastAPI sirve la interfaz HTML/CSS/JS y la API REST. PostgreSQL persiste usuarios, ingredientes, recetas y calificaciones. El servicio interno de generación envía el inventario a [OpenRouter](https://openrouter.ai/docs/api/api-reference/chat/send-chat-completion-request) y valida la respuesta JSON con Pydantic antes de guardarla. Las contraseñas se almacenan como hashes Argon2id. Los endpoints privados requieren JWT Bearer y filtran datos por propietario.
