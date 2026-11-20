@@ -2,7 +2,9 @@
 
 Aplicación del proyecto final de Tecnologías Web (5916). Cada usuario administra su inventario y puede generar, consultar, calificar de 1 a 5 estrellas y eliminar sus recetas.
 
-**Aplicación desplegada:** <https://generadorderecetas.vercel.app> · **Documentación de la API:** <https://generadorderecetas.vercel.app/docs>
+**Aplicación desplegada (Docker Compose + Cloudflare Tunnel):** <https://amplifier-improvements-workflow-cricket.trycloudflare.com> · **Documentación de la API:** <https://amplifier-improvements-workflow-cricket.trycloudflare.com/docs>
+
+**Réplica alternativa (Vercel + Supabase):** <https://generadorderecetas.vercel.app>
 
 ## Arquitectura
 
@@ -45,6 +47,28 @@ La suite usa una base SQLite temporal por prueba de API y simula OpenRouter en e
 | PUT `/api/recipes/{id}/rating` | Crear o actualizar la calificación |
 | DELETE `/api/recipes/{id}` | Eliminar una receta y su calificación |
 
+## Despliegue con Docker y Cloudflare Tunnel
+
+Es el despliegue de entrega. La aplicación y PostgreSQL corren en contenedores separados con Docker Compose en la máquina local, y un tercer contenedor, `cloudflared`, publica la aplicación en internet con HTTPS mediante [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/). No requiere abrir puertos del router ni pagar un servidor.
+
+1. Instala y abre Docker Desktop.
+2. Crea `.env` a partir de `.env.example` como se indica en "Ejecutar con Docker" y configura `OPENROUTER_API_KEY`.
+3. Levanta los tres servicios:
+
+   ```sh
+   docker compose -f docker-compose.yml -f compose.tunnel.yml up -d --build
+   ```
+
+4. Consulta la URL pública HTTPS (`https://…trycloudflare.com`):
+
+   ```sh
+   docker compose -f docker-compose.yml -f compose.tunnel.yml logs cloudflared
+   ```
+
+5. Comprueba `/`, `/docs` y `/favicon.ico` en esa URL y prueba registro, inventario, generación, calificación y eliminación.
+
+La URL del túnel rápido cambia cada vez que se reinicia el contenedor `cloudflared`. El equipo y Docker Desktop deben permanecer encendidos, sin suspensión, mientras la aplicación deba estar disponible. Si cambias `.env`, aplica los cambios con el mismo comando `up -d`: Compose recrea solo la aplicación y la URL del túnel se mantiene.
+
 ## Despliegue en VPS
 
 1. Apunta el registro DNS A del dominio a la IP pública del VPS. Configura un registro AAAA solo si el servidor tiene IPv6 pública funcional.
@@ -57,7 +81,7 @@ Los secretos se configuran en `.env` en cada entorno. El repositorio incluye ún
 
 ## Publicación alternativa en Vercel con Supabase
 
-La versión publicada en <https://generadorderecetas.vercel.app> usa esta opción: FastAPI en Vercel con HTTPS y PostgreSQL administrado en Supabase, donde se crearon las tablas `usuarios`, `ingredientes`, `recetas` y `calificaciones`. La generación usa `openai/gpt-4.1-mini` a través de OpenRouter. El enunciado pide un VPS con Docker Compose para el criterio de despliegue; la configuración para VPS de la sección anterior está lista para usarse.
+La réplica publicada en <https://generadorderecetas.vercel.app> usa esta opción: FastAPI en Vercel con HTTPS y PostgreSQL administrado en Supabase, donde se crearon las tablas `usuarios`, `ingredientes`, `recetas` y `calificaciones`. La generación usa `openai/gpt-4.1-mini` a través de OpenRouter. El enunciado pide un VPS con Docker Compose para el criterio de despliegue; la configuración para VPS de la sección anterior está lista para usarse.
 
 Antes de entregar la URL, ábrela en una ventana de incógnito: las URL de vista previa de Vercel (`*-git-main-*.vercel.app`) exigen iniciar sesión en Vercel. Entrega la URL de producción.
 
