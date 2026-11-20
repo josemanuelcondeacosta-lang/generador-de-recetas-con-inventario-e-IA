@@ -1,0 +1,10 @@
+# Publica la aplicación con HTTPS mediante Cloudflare Tunnel desde la máquina local.
+# Uso: docker compose -f docker-compose.yml -f compose.tunnel.yml up -d --build
+# La URL pública aparece en: docker compose -f docker-compose.yml -f compose.tunnel.yml logs cloudflared
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:2025.11.1
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --url http://app:8000
+    depends_on:
+      - app
