@@ -2,7 +2,7 @@
 
 Aplicación del proyecto final de Tecnologías Web (5916). Cada usuario administra su inventario y puede generar, consultar, calificar de 1 a 5 estrellas y eliminar sus recetas.
 
-**Aplicación desplegada (Docker Compose + Cloudflare Tunnel):** <https://amplifier-improvements-workflow-cricket.trycloudflare.com> · **Documentación de la API:** <https://amplifier-improvements-workflow-cricket.trycloudflare.com/docs>
+**Aplicación desplegada (Docker Compose + Cloudflare Tunnel):** <https://published-rehab-sort-normally.trycloudflare.com> · **Documentación de la API:** <https://published-rehab-sort-normally.trycloudflare.com/docs>
 
 **Réplica alternativa (Vercel + Supabase):** <https://generadorderecetas.vercel.app>
 
